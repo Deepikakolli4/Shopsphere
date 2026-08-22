@@ -1,0 +1,52 @@
+services:
+
+  mysql:
+    image: mysql:8.4
+    container_name: shopsphere-mysql
+    restart: unless-stopped
+
+    environment:
+      MYSQL_DATABASE: shopsphere
+      MYSQL_ROOT_PASSWORD: deepika@11
+
+    ports:
+      - "3307:3306"
+
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+    networks:
+      - shopsphere-network
+
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: shopsphere-app
+    restart: unless-stopped
+
+    ports:
+      - "8080:8080"
+
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/shopsphere
+      DB_USERNAME: root
+      DB_PASSWORD: deepika@11
+      JWT_SECRET: shopsphere-jwt-secret-key-2026-development
+
+    depends_on:
+      - mysql
+
+    networks:
+      - shopsphere-network
+
+
+volumes:
+  mysql_data:
+
+
+networks:
+  shopsphere-network:
+    driver: bridge
